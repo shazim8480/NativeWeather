@@ -1,8 +1,36 @@
-import { StatusBar } from "expo-status-bar";
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import * as Location from "expo-location";
+import React, { useEffect, useState } from "react";
+import { ScrollView, StyleSheet, Text, View, Dimensions } from "react-native";
+// get the screen width //
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+// console.log(SCREEN_WIDTH);
 
 export default function App() {
+  const [location, setLocation] = useState();
+  const [ok, setOk] = useState(false);
+
+  //function for location management//
+  const ask = async () => {
+    // ask for user permission to use location //
+    //inside the returned object there is "granted"//
+    // if permission is granted
+    const { granted } = await Location.requestForegroundPermissionsAsync();
+    // if permission is not granted
+    if (!granted) {
+      setOk(false);
+    }
+
+    // get the user location after permission is granted
+    const userLocation = await Location.getCurrentPositionAsync({
+      accuracy: 5,
+    });
+    console.log(userLocation);
+  };
+
+  useEffect(() => {
+    ask();
+  }, []);
+
   return (
     <View style={styles.container}>
       {/* city container */}
@@ -10,13 +38,29 @@ export default function App() {
         <Text style={styles.cityName}>Dhaka</Text>
       </View>
       {/* weather container */}
-      <View style={styles.weather}>
-        {/* day container */}
+      <ScrollView
+        pagingEnabled
+        horizontal
+        contentContainerStyle={styles.weather}
+      >
+        {/* day containers */}
         <View style={styles.day}>
           <Text style={styles.temp}>25</Text>
           <Text style={styles.description}>Clear</Text>
         </View>
-      </View>
+        <View style={styles.day}>
+          <Text style={styles.temp}>25</Text>
+          <Text style={styles.description}>Clear</Text>
+        </View>
+        <View style={styles.day}>
+          <Text style={styles.temp}>25</Text>
+          <Text style={styles.description}>Clear</Text>
+        </View>
+        <View style={styles.day}>
+          <Text style={styles.temp}>25</Text>
+          <Text style={styles.description}>Clear</Text>
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -36,11 +80,9 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontSize: 60,
   },
-  weather: {
-    flex: 3,
-  },
+  weather: {},
   day: {
-    flex: 1,
+    width: SCREEN_WIDTH,
     alignItems: "center",
   },
   temp: {
